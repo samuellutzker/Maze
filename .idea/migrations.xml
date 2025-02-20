@@ -4,6 +4,7 @@
     <option name="MigrateToGradleLocalJavaHome">
       <set>
         <option value="$USER_HOME$/Library/CloudStorage/Dropbox/Coding/Android/Maze" />
+        <option value="$PROJECT_DIR$" />
       </set>
     </option>
   </component>

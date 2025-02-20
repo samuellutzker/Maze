@@ -191,7 +191,7 @@ public class Game implements GLSurfaceView.Renderer {
         dlgAlert.setPositiveButton("Go", (dialogInterface, i) -> {
             int selected = ((AlertDialog)dialogInterface).getListView().getCheckedItemPosition();
             switch (selected) {
-                case 0 : worldSize = 5; level = "Beginner"; break;
+                case 0 : worldSize = 5; level = "Trivial"; break;
                 case 1 : worldSize = 10; level = "Easy"; break;
                 case 2 : worldSize = 13; level = "Medium"; break;
                 case 3 : worldSize = 20; level = "Hard"; break;

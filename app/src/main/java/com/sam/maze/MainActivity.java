@@ -1,9 +1,11 @@
 package com.sam.maze;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.ActionBar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
     private MyGLSurfaceView glSurfaceView;
@@ -24,6 +26,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        View decorView = getWindow().getDecorView();
+
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
 
         glSurfaceView = new MyGLSurfaceView(this);
         setContentView(glSurfaceView);

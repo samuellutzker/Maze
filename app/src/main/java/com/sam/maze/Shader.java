@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class Shader {
     private String vertexShader, fragmentShader;
     private int programHandle;
-    private static int currentProgram = 0;
 
     private void setup() {
         int vertexShaderHandle = GLES32.glCreateShader(GLES32.GL_VERTEX_SHADER);

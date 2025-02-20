@@ -18,7 +18,7 @@
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$USER_HOME$/Library/CloudStorage/Dropbox/Coding/Android/Maze" />
-        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$USER_HOME$/Library/CloudStorage/Dropbox/Coding/Android/Maze" />
