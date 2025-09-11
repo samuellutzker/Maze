@@ -7,6 +7,9 @@ import android.content.Context;
 import android.opengl.GLES32;
 import android.opengl.Matrix;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class MazeWorld extends Maze {
     private final static float WALL_WIDTH = 0.05f, WALL_REPEATS = 3.2f;
 
@@ -244,29 +247,46 @@ public class MazeWorld extends Maze {
         return data;
     }
 
-    private static Model.Vertex [] makeBall(float r, float res) {
-        final float pi = (float)Math.PI;
-        final int [] zigzag = {0,0,1,0,0,1,0,1,1,0,1,1};
+    private static Model.Vertex stretch(Model.Vertex a, Model.Vertex b) {
+        Model.Vertex c = new Model.Vertex(a.position.add(b.position).mul(0.5f), a.normal.add(b.normal).mul(0.5f), a.texCoord.add(b.texCoord).mul(0.5f));
+        c.position = c.position.mul(1.0f / (float)c.position.abs());
+        c.normal = c.normal.mul(1.0f / (float)c.normal.abs());
+        if (b.texCoord.y == 0.0f || b.texCoord.y == 1.0f) {
+            c.texCoord.x = a.texCoord.x;
+        } else if  (a.texCoord.y == 0.0f || a.texCoord.y == 1.0f) {
+            c.texCoord.x = b.texCoord.x;
+        }
+        return c;
+    }
+    private static Model.Vertex [] makeBall(int res) {
+        Queue<Model.Vertex> q = new LinkedList<>();
+        for (int i = 0; i < 4; ++i) {
+            boolean even = i % 2 == 0, big = i > 1;
+            Vec3 leftVec = new Vec3(even ? (big ? 1.0f : -1.0f) : 0.0f, even ? 0.0f : (big ? -1.0f : 1.0f), 0.0f);
+            Vec3 rightVec = new Vec3(even ? 0.0f : (big ? 1.0f : -1.0f), even ? (big ? 1.0f : -1.0f) : 0.0f, 0.0f);
+            Model.Vertex left = new Model.Vertex(leftVec, leftVec, new Vec2(0.25f+0.25f*i, 0.5f));
+            Model.Vertex right = new Model.Vertex(rightVec, rightVec, new Vec2(0.25f*i, 0.5f));
+            q.add(new Model.Vertex(new Vec3(0.0f, 0.0f, 1.0f), new Vec3(0.0f, 0.0f, 1.0f), new Vec2(0.125f+0.25f*i, 0.0f)));
+            q.add(left); q.add(right);
+            q.add(new Model.Vertex(new Vec3(0.0f, 0.0f, -1.0f), new Vec3(0.0f, 0.0f, -1.0f), new Vec2(0.125f+0.25f*i, 1.0f)));
+            q.add(right); q.add(left);
+        }
 
-        int l = (int)(1.0/res);
-
-        Model.Vertex [] data = new Model.Vertex[6*l*l];
-
-        for (int i=0; i < l*l; ++i) {
-            for (int k=0; k < 6; ++k) {
-                float u = ((i/l)+zigzag[2*k])  *res;
-                float v = ((i%l)+zigzag[2*k+1])*res;
-                float phi = u*2*pi;
-                float psi = v*pi-pi/2;
-                float x = (float)(r * Math.cos(phi) * Math.cos(psi));
-                float y = (float)(r * Math.sin(phi) * Math.cos(psi));
-                float z = (float)(r * Math.sin(psi));
-                data[6*i+k] = new Model.Vertex(new Vec3(x,y,z), new Vec3(x,y,z), new Vec2(u, -v));
+        for (int i = 0; i < res; ++i) {
+            int n = q.size() / 3;
+            for (int k = 0; k < n; ++k) {
+                Model.Vertex a = q.remove();
+                Model.Vertex b = q.remove();
+                Model.Vertex c = q.remove();
+                q.add(a); q.add(stretch(a, b)); q.add(stretch(a, c));
+                q.add(stretch(a, b)); q.add(b); q.add(stretch(b, c));
+                q.add(stretch(a, c)); q.add(stretch(b, c)); q.add(c);
+                q.add(stretch(a, c)); q.add(stretch(a, b)); q.add(stretch(b, c));
             }
         }
-        return data;
-    }
 
+        return q.toArray(new Model.Vertex[0]);
+    }
     public MazeWorld(Context context, int width, int height, int scr_w, int scr_h) {
         super(width, height);
 
@@ -398,7 +418,7 @@ public class MazeWorld extends Maze {
         // Load all models
         wall = new Model(context, wallPos, wallNorm, wallTex, R.drawable.wall, R.drawable.wall_spec, 0.3f);
         floor = new Model(context, floorPos, floorNorm, floorTex, R.drawable.floor, R.drawable.floor_spec, 0.4f);
-        sky = new Model(context, makeBall(1.0f, 0.01f), R.drawable.sky, R.drawable.sky, 0.0f);
+        sky = new Model(context, makeBall(5), R.drawable.sky, R.drawable.sky, 0.0f);
         tower = new Model(context, makeColumn(0.10f, 0.01f), R.drawable.wall, R.drawable.wall_spec, 0.55f);
         earth = new Model(context, sky, R.drawable.earth, R.drawable.earth, 0.0f);
 

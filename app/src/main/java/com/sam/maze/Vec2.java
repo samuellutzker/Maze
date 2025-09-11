@@ -9,4 +9,8 @@ public class Vec2 {
     public Vec2 add(Vec2 other) {
         return new Vec2(x+other.x, y+other.y);
     }
+    public Vec2 mul(float v) {
+        return new Vec2(v*x, v*y);
+    }
+
 }
